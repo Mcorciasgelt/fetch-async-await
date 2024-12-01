@@ -16,6 +16,8 @@
 const divApp = document.getElementById("app")
 
 
+// PRIMERA FUNCIÓN QUE LLAMA A LA API INICIAL PARA OBTENER EL LISTADO DE LOS POKEMONS SEGÚN LA PAGINACIÓN 
+// (TODAVÍA NO HICE LO DE PAGINACIÓN, PERO FUI PONIENDO ESA VARIABLE POR PROBAR)
     const getPokemon = async (paginacion) => {
 
         try {
@@ -29,74 +31,49 @@ const divApp = document.getElementById("app")
             return array
             
         } catch (error) {
-            console.log("Error CATCH al obtener los datos", error)
+            console.log("Error CATCH LISTADO al obtener los datos", error)
         }
         
     }
 
-    console.log(getPokemon(0))
+    console.log(getPokemon())
 
-    // DE FORMA COMPLEJA
-
-    // POR CADA VEZ QUE SE LLAMA A TEMPLATE -> HACE UN FOREACH EN DONDE SE LLAMA A GETPOKEMON2 PARA CADA ELEMENTO
-
-    const template = (pokemons) => {
-
-    pokemons.forEach((element) => getPokemon2(element))
-
-    }
-
-
-    // AQUÍ SE HACE FETCH DE CADA URL DE CADA POKEMON PARA BUSCAR SU INFORMACIÓN PARTICULAR
-
-    const getPokemon2 = async (pokemon) => {
+// SEGUNDA FUNCIÓN, CON EL RESULTADO DE LA ANTERIOR (QUE ES UN ARRAY) VA A USAR PROMISE.ALL PARA ESPERAR A QUE TODAS LAS PROMESAS SE RESUELVAN
+// CADA UNA DE LAS PROMESAS SUCEDE EN EL MAP (YO ESTABA INTENTADO UN FOREACH PERO LUEGO LEÍ QUE EL FOREACH NO MANEJA PROMESAS)
+    const getDetallesPokemons = async (listaPokemons) => {
 
         try {
 
-            const responsePokemon = await fetch(`${pokemon.url}`)
-            if (!responsePokemon.ok) {
-                throw new Error ("Ha surgido un error con la llamada API 2", responsePokemon.status)            
-            }
-            const dataPokemon = await responsePokemon.json()
-            return dataPokemon
+            const detallesPokemons = await Promise.all(
+                listaPokemons.map(pokemon => fetch(pokemon.url).then(res => res.json()))
+            )
+            
+            return detallesPokemons
             
         } catch (error) {
-
-            console.log("Error CATCH 2 al obtener los datos", error)
+            console.log("Error CATCH DETALLES al obtener los datos", error)
         }
+        
+    }    
 
-        console.log(dataPokemon);
+    
 
-/*         divApp.innerHTML +=
+// UNA VEZ QUE YA TIENE CREADO EL NUEVO ARRAY (DE LA FUNCIÓN ANTERIOR) CON EL JSON DE CADA URL DETALLE DE POKEMON, LOS PINTA EN EL DOM
+
+    const template = (pokemons) => {
+
+    pokemons.forEach((element) => {
+        divApp.innerHTML +=
         `
         <div>
-            <img src="${data.sprites.other.front_default}" alt="imagen pokemon ${data.name}">
-            <p>${data.name}</p>
+            <img src="${element.sprites.other.dream_world.front_default}" alt="imagen pokemon ${element.name}">
+            <p>${element.name}</p>
         </div>
 
-        ` */
+        ` 
+    })
+
     }
 
-
-
-
-    // DE FORMA BUSCA VIDAS
-/* const template = (pokemons) => {
-
-pokemons.forEach(element => {
-    const idPokemos = pokemons.indexOf(element) + 1
-    console.log(idPokemos);
-    
-    divApp.innerHTML +=
-    `
-    <div>
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${idPokemos}.svg" alt="imagen pokemon ${element.name}">
-        <p>${element.name}</p>
-    </div>
-    
-    `
-}); 
-  
-}*/
-
-getPokemon(0).then((listado) => template(listado))
+// CON ESTO VAMOS LLAMANDO A CADA FUNCIÓN Y DECIMOS QUE USARÁ COMO PARÁMETRO EN LA SIGUIENTE FUNCIÓN
+getPokemon(0).then((listado) => getDetallesPokemons(listado).then((detalles) => template(detalles)))

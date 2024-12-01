@@ -15,7 +15,7 @@ FYI: La pokedex es el listado de todos los pokemon con sus nombres e imagenes. P
 
 ### Paso 3: Lógica JavaScript
 - En `script.js` harás toda la lógica del programa.
-- La URL base es la siguiente `https://pokeapi.co/api/v2/pokemon`
+- La URL base es la siguiente `"https://pokeapi.co/api/v2/pokemon/"`
 - Implementa la lógica para interactuar con la API de Pokémon.
 - Gestiona la paginación para mostrar diferentes conjuntos de Pokémon. De 10 en 10. añadir esto a la url más otras cosas puede limitar la cantidad `?limit=`
 - Permite la búsqueda de Pokémon por nombre. Si no exite deberá aparecer un mensaje de "pokemon no encontrado"
