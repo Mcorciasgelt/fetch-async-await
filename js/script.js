@@ -18,14 +18,17 @@ let offsetActual = 0
 const botonAnterior = document.getElementById("prevBtn")
 const botonSiguiente = document.getElementById("nextBtn")
 const botonReset = document.getElementById("resetBtn")
+const inputSearch = document.getElementById("searchInput")
+const botonSearch = document.getElementById("searchBtn")
+
 
 // PRIMERA FUNCIÓN QUE LLAMA A LA API INICIAL PARA OBTENER EL LISTADO DE LOS POKEMONS SEGÚN LA PAGINACIÓN 
 // (TODAVÍA NO HICE LO DE PAGINACIÓN, PERO FUI PONIENDO ESA VARIABLE POR PROBAR)
-    const getPokemon = async (paginacion) => {
+    const getPokemon = async (paginacion, limite) => {
 
         try {
 
-            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/?offset=${paginacion}&limit=10`)
+            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/?offset=${paginacion}&limit=${limite}`)
             if (!response.ok) {
                 throw new Error ("Ha surgido un error con la llamada API", response.status)            
             }
@@ -80,25 +83,52 @@ const botonReset = document.getElementById("resetBtn")
 
     botonSiguiente.addEventListener("click", () => {
         offsetActual += 10
-        cargarLista(offsetActual)
+        cargarLista(offsetActual,10)
     })
 
     botonAnterior.addEventListener("click", () => {
         if (offsetActual > 0) {
             offsetActual -= 10
-        cargarLista(offsetActual)}
+        cargarLista(offsetActual,10)}
     })
 
     botonReset.addEventListener("click", () => {
+        inputSearch.value=""
         offsetActual=0
-        cargarLista(offsetActual)
+        cargarLista(offsetActual,10)
     })
+
+
+    botonSearch.addEventListener("click", () => {
+        inputArreglado = inputSearch.value
+        inputArreglado = inputArreglado.toLowerCase()
+        getPokemon(0,-1)
+            .then((listado) => {
+                const pokemonBuscado = listado.filter((pokemon) => pokemon.name == inputArreglado)
+                console.log(pokemonBuscado)
+        
+        if(pokemonBuscado.length == 0) {
+ 
+            divApp.innerHTML="<p>POKEMON NO ENCONTRADO</p>"
+        }
+        else {
+        divApp.innerHTML=""
+        getDetallesPokemons(pokemonBuscado).then((detalles) => template(detalles))
+        }
+            
+        })
+        .catch ((error) => {
+            console.log(error)
+        })
+        
+    })
+
 
 // CON ESTO CREAMOS UNA FUNCIÓN CON EL OFFSET Y VAMOS LLAMANDO A CADA FUNCIÓN Y DECIMOS QUE USARÁ COMO PARÁMETRO EN LA SIGUIENTE FUNCIÓN
     const cargarLista = (offset) => {
 
         divApp.innerHTML=""
-        getPokemon(offset).then((listado) => getDetallesPokemons(listado).then((detalles) => template(detalles)))
+        getPokemon(offset,10).then((listado) => getDetallesPokemons(listado).then((detalles) => template(detalles)))
 
     }
 
