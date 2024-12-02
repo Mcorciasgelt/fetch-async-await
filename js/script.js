@@ -71,9 +71,9 @@ const botonSearch = document.getElementById("searchBtn")
     pokemons.forEach((element) => {
         divApp.innerHTML +=
         `
-        <div>
+        <div class="fichaPokemon">
             <img src="${element.sprites.other.dream_world.front_default}" alt="imagen pokemon ${element.name}">
-            <p>${element.name}</p>
+            <p class="nombrePokemon">${element.name}</p>
         </div>
 
         ` 
