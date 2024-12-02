@@ -14,7 +14,10 @@
 
 
 const divApp = document.getElementById("app")
-
+let offsetActual = 0
+const botonAnterior = document.getElementById("prevBtn")
+const botonSiguiente = document.getElementById("nextBtn")
+const botonReset = document.getElementById("resetBtn")
 
 // PRIMERA FUNCIÓN QUE LLAMA A LA API INICIAL PARA OBTENER EL LISTADO DE LOS POKEMONS SEGÚN LA PAGINACIÓN 
 // (TODAVÍA NO HICE LO DE PAGINACIÓN, PERO FUI PONIENDO ESA VARIABLE POR PROBAR)
@@ -75,5 +78,28 @@ const divApp = document.getElementById("app")
 
     }
 
-// CON ESTO VAMOS LLAMANDO A CADA FUNCIÓN Y DECIMOS QUE USARÁ COMO PARÁMETRO EN LA SIGUIENTE FUNCIÓN
-getPokemon(0).then((listado) => getDetallesPokemons(listado).then((detalles) => template(detalles)))
+    botonSiguiente.addEventListener("click", () => {
+        offsetActual += 10
+        cargarLista(offsetActual)
+    })
+
+    botonAnterior.addEventListener("click", () => {
+        if (offsetActual > 0) {
+            offsetActual -= 10
+        cargarLista(offsetActual)}
+    })
+
+    botonReset.addEventListener("click", () => {
+        offsetActual=0
+        cargarLista(offsetActual)
+    })
+
+// CON ESTO CREAMOS UNA FUNCIÓN CON EL OFFSET Y VAMOS LLAMANDO A CADA FUNCIÓN Y DECIMOS QUE USARÁ COMO PARÁMETRO EN LA SIGUIENTE FUNCIÓN
+    const cargarLista = (offset) => {
+
+        divApp.innerHTML=""
+        getPokemon(offset).then((listado) => getDetallesPokemons(listado).then((detalles) => template(detalles)))
+
+    }
+
+cargarLista(offsetActual)
